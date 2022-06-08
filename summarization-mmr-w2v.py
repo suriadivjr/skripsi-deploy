@@ -49,7 +49,7 @@ if center_button:
     dots = text.count('.')
 
     if dots < 2:
-        st.error("Berita yang Anda masukkan terlalu pendek.")
+        st.error("Anda belum memasukkan berita atau berita yang Anda masukkan terlalu pendek.")
     else:
         try:
             #generate random ID 
@@ -147,7 +147,7 @@ if center_button:
 
 
             #load Word2Vec Model
-            model = Word2Vec.load("./w2vmodel/w2vmodel.w2v")
+            model = Word2Vec.load("./w2vmodel.w2v")
 
 
             #convert query to vector
