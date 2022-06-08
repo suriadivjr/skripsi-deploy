@@ -56,7 +56,7 @@ if center_button:
             news_id = str(rand.randint(0, 10000000))
 
             #split original sentences and write to new csv file "ori.csv"
-            csvfile = open('./programdata/ori' + news_id + '.csv', 'a+', encoding="utf-8")
+            csvfile = open('./ori' + news_id + '.csv', 'a+', encoding="utf-8")
             csvfile.write("sentence\n")
             ori_sentence_clean = text.replace('\\t', " ").replace('\\n', " ").replace('\\u'," ")
             ori_sentence_split = sent_tokenize(ori_sentence_clean)
@@ -66,7 +66,7 @@ if center_button:
 
 
             #split original sentences and write to new csv file "ori.csv"
-            csvfile = open('./programdata/ori' + news_id + '.csv', 'a+', encoding="utf-8")
+            csvfile = open('./ori' + news_id + '.csv', 'a+', encoding="utf-8")
             csvfile.write("sentence\n")
             ori_sentence_clean = text.replace('\\t', " ").replace('\\n', " ").replace('\\u'," ")
             ori_sentence_split = sent_tokenize(ori_sentence_clean)
@@ -107,7 +107,7 @@ if center_button:
                 single_char_removed = remove_single_char(number_removed)
                 return single_char_removed
 
-            csvfile = open('./programdata/processed' + news_id + '.csv', 'a+', encoding="utf-8")
+            csvfile = open('./processed' + news_id + '.csv', 'a+', encoding="utf-8")
             csvfile.write("sentence_cleaned,sentence_processed\n")
             for sentence_split in ori_sentence_split:
                 cleaned_text = text_cleaning(sentence_split)
@@ -134,7 +134,7 @@ if center_button:
             def join_text_list(words):
                 return ' '.join([word for word in words])
 
-            NEWS_DATA = pd.read_csv('./programdata/processed' + news_id + '.csv')
+            NEWS_DATA = pd.read_csv('./processed' + news_id + '.csv')
             nltk.download('punkt')
             nltk.download('stopwords')
 
@@ -142,7 +142,7 @@ if center_button:
             stopword_removed = sentence_token.apply(remove_stopwords)
             news_token = stopword_removed.apply(get_stemmed_term)
             NEWS_DATA['sentence_processed'] = news_token.apply(join_text_list)
-            NEWS_DATA.to_csv('./programdata/processed' + news_id + '.csv')
+            NEWS_DATA.to_csv('./processed' + news_id + '.csv')
 
 
             #load Word2Vec Model
@@ -150,7 +150,7 @@ if center_button:
 
 
             #convert query to vector
-            df = pd.read_csv('./programdata/processed' + news_id + '.csv', sep=',').dropna()
+            df = pd.read_csv('./processed' + news_id + '.csv', sep=',').dropna()
             df.rename(columns = {'Unnamed: 0':'id'}, inplace = True)
 
             oneSentenceDoc = ''
@@ -233,7 +233,7 @@ if center_button:
 
             #extract summary from existing csv file "ori.csv" based on ID in summarySetSorted
             summarySetSorted = sorted(summarySet)
-            news = pd.read_csv('./programdata/ori' + news_id + '.csv', sep=';').dropna()
+            news = pd.read_csv('./ori' + news_id + '.csv', sep=';').dropna()
             summaryResult = []
             for summary in summarySetSorted:
                 summaryResult.append(str(news['sentence'][summary].lstrip(' ')))
@@ -246,7 +246,7 @@ if center_button:
         except ZeroDivisionError:
             st.error("Anda belum memasukkan berita atau berita yang Anda masukkan kosong.")
 
-        os.remove('./programdata/ori' + news_id + '.csv')
-        os.remove('./programdata/processed' + news_id + '.csv')
+        os.remove('./ori' + news_id + '.csv')
+        os.remove('./processed' + news_id + '.csv')
 else:
     st.text_area("Ringkasan Berita", disabled=True, height=250, max_chars=None, value="", placeholder="Ringkasan berita Anda akan ditampilkan di sini.")
