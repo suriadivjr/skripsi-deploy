@@ -245,7 +245,7 @@ if center_button:
             st.error("Berita Anda tidak mengandung kata-kata yang berarti.")
 
         except ZeroDivisionError:
-            st.error("Anda belum memasukkan berita atau berita yang Anda masukkan kosong.")
+            st.error("Berita yang Anda masukkan kosong.")
 
         os.remove('./ori' + news_id + '.csv')
         os.remove('./processed' + news_id + '.csv')
