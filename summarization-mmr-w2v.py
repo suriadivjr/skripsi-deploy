@@ -53,7 +53,6 @@ if center_button:
     else:
         try:
             #generate random ID 
-            print(dots)
             news_id = str(rand.randint(0, 10000000))
 
             #split original sentences and write to new csv file "ori.csv"
