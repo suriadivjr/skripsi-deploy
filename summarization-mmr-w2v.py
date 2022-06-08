@@ -17,6 +17,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from gensim.models.word2vec import Word2Vec
 from sklearn.metrics.pairwise import cosine_similarity
 
+st.set_page_config(page_title="140810180038 - Suriadi Vajrakaruna - Skripsi")
 st.markdown("<h1 style='text-align: center; color: black; font-size: 25px'><i>AUTOMATIC EXTRACTIVE SUMMARIZATION</i> UNTUK BERITA COVID-19 BERBAHASA INDONESIA MENGGUNAKAN <i>WORD2VEC</i> DENGAN ALGORITMA <i>MAXIMUM MARGINAL RELEVANCE</i> (MMR)</h1>", unsafe_allow_html=True)
 st.markdown("<h6 style='text-align: center; color: black; font-size: 18px'>Suriadi Vajrakaruna - 140810180038 - Teknik Informatika FMIPA Universitas Padjadjaran</h6>", unsafe_allow_html=True)
 
