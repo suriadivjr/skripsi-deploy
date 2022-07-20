@@ -48,7 +48,8 @@ if menu_name == 'Program Peringkas':
     st.markdown("<h1 style='text-align: center; color: black; font-size: 25px'>Program Peringkas Otomatis Berita Covid-19</h1>", unsafe_allow_html=True)
     stralpha = st.selectbox("Pilih Lambda (λ). Nilai optimal berada pada 0,7 atau 0,8.", 
                         ('0.7', '0.8', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.9'))
-    strn = st.number_input("Jumlah kalimat ringkasan yang diinginkan:", min_value=1)
+    strn = st.selectbox("Perbandingan Jumlah Kalimat Ringkasan Berita dan Kalimat Berita Orisinal",
+                        ('Setengah dari berita orisinal', 'Sepertiga dari berita orisinal', 'Seperempat dari berita orisinal', 'Seperdelapan dari berita orisinal'))
     text_inp = st.text_area("Berita Orisinal", disabled=False, height=250, max_chars=None, placeholder="Masukkan berita yang ingin Anda ringkas di sini.", key="input")
     
 
@@ -237,9 +238,17 @@ if menu_name == 'Program Peringkas':
 
 
                 #process MMR score
-                n = int(strn)
-                if n > len(sentences):
-                    st.error('Jumlah kalimat ringkasan tidak boleh melebihi jumlah kalimat berita orisinal.')        
+                if strn == 'Setengah dari berita orisinal':
+                    n = math.floor(len(sentences) / 2)
+                elif strn == 'Sepertiga dari berita orisinal':
+                    n = math.floor(len(sentences) / 3)
+                elif strn == 'Seperempat dari berita orisinal':
+                    n = math.floor(len(sentences) / 4)
+                else:
+                    n = math.floor(len(sentences) / 8)         
+
+                if n < 1:
+                    st.error('Berita anda terlalu pendek untuk perbandingan kalimat yang anda pilih.')        
                     summarySet = None
                 else:
                     alpha = float(stralpha)
