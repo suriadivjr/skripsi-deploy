@@ -46,7 +46,7 @@ if menu_name == 'Program Peringkas':
         img = Image.open('unpad.png')
         st.image(img, use_column_width = 'always')
     st.markdown("<h1 style='text-align: center; color: black; font-size: 25px'>Program Peringkas Otomatis Berita Covid-19</h1>", unsafe_allow_html=True)
-    stralpha = st.selectbox("Pilih Lambda (λ). Nilai optimal berada pada 0,7 atau 0,8.", 
+    stralpha = st.selectbox("Pilih Lambda (λ). Nilai optimal berada pada 0,7 atau 0,8. Semakin kecil nilai λ, kalimat yang diekstrak akan lebih bervariasi. Semakin besar λ, kalimat yang diekstrak akan lebih mengacu ke ide pokok berita.", 
                         ('0.7', '0.8', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.9'))
     strn = st.number_input("Jumlah kalimat ringkasan yang diinginkan:", min_value=1)
     text_inp = st.text_area("Berita Orisinal", disabled=False, height=250, max_chars=None, placeholder="Masukkan berita yang ingin Anda ringkas di sini.", key="input")
