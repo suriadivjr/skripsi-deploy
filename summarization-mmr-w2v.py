@@ -20,7 +20,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from PIL import Image
 
 st.set_page_config(page_title="140810180038 - Suriadi Vajrakaruna - Skripsi")
-st.sidebar.write('Program Peringkas Berita Covid-19 Berbahasa Indonesia')
+st.sidebar.write('Program Peringkas Otomatis Berita Covid-19 Berbahasa Indonesia')
 menu_name = st.sidebar.selectbox(
     'Pilih Menu', ['Deskripsi Program', 'Program Peringkas', 'Biodata Penulis']
 )
@@ -45,8 +45,12 @@ if menu_name == 'Program Peringkas':
     with col1:
         img = Image.open('unpad.png')
         st.image(img, use_column_width = 'always')
-    st.markdown("<h1 style='text-align: center; color: black; font-size: 25px'>Program Peringkas Berita Covid-19</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: black; font-size: 25px'>Program Peringkas Otomatis Berita Covid-19</h1>", unsafe_allow_html=True)
+    stralpha = st.selectbox("Pilih Lambda (λ). Nilai optimal berada pada 0,7 atau 0,8.", 
+                        ('0.7', '0.8', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.9'))
+    strn = st.number_input("Jumlah kalimat ringkasan yang diinginkan:", min_value=1)
     text_inp = st.text_area("Berita Orisinal", disabled=False, height=250, max_chars=None, placeholder="Masukkan berita yang ingin Anda ringkas di sini.", key="input")
+    
 
     col1, col2, col3 , col4, col5 = st.columns(5)
     with col1:
@@ -182,7 +186,6 @@ if menu_name == 'Program Peringkas':
                         vectors.append(np.zeros(model.vector_size))
                 doc_vector = sum(vectors) / len(vectors)
 
-
                 #convert every sentence to vector
                 sentences = df["sentence_processed"]
 
@@ -234,27 +237,32 @@ if menu_name == 'Program Peringkas':
 
 
                 #process MMR score
-                n = math.floor(len(sentences) / 2) 
-                alpha = 0.7
-                summarySet = []
-                while n > 0:
-                    mmr = {}
-                    for sentence in cs_scores.keys():
-                        if not sentence in summarySet:
-                            mmr[sentence] = alpha * cs_scores[sentence] - (1-alpha) * calculate_similarity(sentence, summarySet)
-                    selected = max(mmr.items(), key=operator.itemgetter(1))[0]
-                    summarySet.append(selected)
-                    n -= 1
+                n = int(strn)
+                if n > len(sentences):
+                    st.error('Jumlah kalimat ringkasan tidak boleh melebihi jumlah kalimat berita orisinal.')        
+                    summarySet = None
+                else:
+                    alpha = float(stralpha)
+                    summarySet = []
+                    while n > 0:
+                        mmr = {}
+                        for sentence in cs_scores.keys():
+                            if not sentence in summarySet:
+                                mmr[sentence] = alpha * cs_scores[sentence] - (1-alpha) * calculate_similarity(sentence, summarySet)
+                        selected = max(mmr.items(), key=operator.itemgetter(1))[0]
+                        summarySet.append(selected)
+                        n -= 1
 
 
                 #extract summary from existing csv file "ori.csv" based on ID in summarySetSorted
-                summarySetSorted = sorted(summarySet)
-                news = pd.read_csv('./ori' + news_id + '.csv', sep=';').dropna()
-                summaryResult = []
-                for summary in summarySetSorted:
-                    summaryResult.append(str(news['sentence'][summary].lstrip(' ')))
-                summaryText = ' '.join(summaryResult).replace('\\"','"')
-                st.text_area("Ringkasan Berita", disabled=True, height=250, max_chars=None, value=summaryText, placeholder="Ringkasan berita Anda akan ditampilkan di sini.")
+                if summarySet is not None:
+                    summarySetSorted = sorted(summarySet)
+                    news = pd.read_csv('./ori' + news_id + '.csv', sep=';').dropna()
+                    summaryResult = []
+                    for summary in summarySetSorted:
+                        summaryResult.append(str(news['sentence'][summary].lstrip(' ')))
+                    summaryText = ' '.join(summaryResult).replace('\\"','"')
+                    st.text_area("Ringkasan Berita", disabled=True, height=250, max_chars=None, value=summaryText, placeholder="Ringkasan berita Anda akan ditampilkan di sini.")
 
             except ValueError:
                 st.error("Berita Anda tidak mengandung kata-kata yang berarti.")
@@ -278,5 +286,5 @@ if menu_name == 'Biodata Penulis':
         st.image(image, use_column_width = 'always', caption='Suriadi Vajrakaruna')
     with col3:
         st.write(' ')
-    st.markdown("<p style='text-align: justify; color: black; font-size: 17px'><b>Suriadi Vajrakaruna</b> merupakan penulis skripsi ini. Lahir pada 25 Juni 2000 di Kota Tangerang, penulis merupakan anak pertama dari tiga bersaudara. Sejak lahir, penulis berdomisili di Kota Tangerang dan menempuh SD, SMP, dan SMA berturut-turut pada SD Anak Terang, SMP Pahoa, dan SMA Negeri 2 Kota Tangerang. Saat ini, penulis sedang menempuh pendidikan S1 pada Teknik Informatika FMIPA Universitas Padjadjaran. Namun, penulis telah memiliki beberapa pengalaman yang diperoleh dari program magang sebagai <i>Quality Assurance Tester & Engineer</i> pada Campaign.com dan <i>Product Manager</i> pada AwanTunai. Selama masa kuliah, penulis mendapat beberapa prestasi dan apresiasi seperti <i>Wallstreet English Level 15 Completion</i> dan Juara 2 KTI TIK pada ajang Gemastik XII pada 2019 serta Juara I KTK TIK pada ajang Gemastik XIII, Mahasiswa Berprestasi Teknik Informatika Unpad, dan dinominasikan sebagai Mahasiswa dengan Publikasi Riset Terproduktif Unpad Awards pada tahun 2020.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: justify; color: black; font-size: 17px'><b>Suriadi Vajrakaruna</b> merupakan penulis skripsi ini. Lahir pada 25 Juni 2000 di Kota Tangerang, penulis merupakan anak pertama dari tiga bersaudara. Sejak lahir, penulis berdomisili di Kota Tangerang dan menempuh SD, SMP, dan SMA berturut-turut pada SD Anak Terang, SMP Pahoa, dan SMA Negeri 2 Kota Tangerang. Saat ini, penulis sedang menempuh pendidikan S1 pada Teknik Informatika FMIPA Universitas Padjadjaran. Namun, penulis telah memiliki beberapa pengalaman yang diperoleh dari program magang sebagai <i>Quality Assurance Tester & Engineer</i> pada Campaign.com dan <i>Product Manager</i> pada AwanTunai. Selama masa kuliah, penulis mendapat beberapa prestasi apresiasi seperti <i>Wallstreet English Level 15 Completion</i> dan Juara 2 KTI TIK pada ajang Gemastik XII pada 2019 serta Juara I KTK TIK pada ajang Gemastik XIII, Mahasiswa Berprestasi Teknik Informatika Unpad, dan dinominasikan sebagai Mahasiswa dengan Publikasi Riset Terproduktif Unpad Awards pada tahun 2020.</p>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: justify; color: black; font-size: 17px'>Selain apresiasi dan prestasi, penulis juga turut aktif dalam beberapa organisasi dan kepanitiaan. Mulai dari tahun 2018, pada saat penulis menjadi mahasiswa baru, penulis telah dipercaya untuk menjadi Ketua Divisi Humas untuk Musyawarah Besar IV Teknik Informatika Unpad. Setelah itu, penulis menjabat sebagai Anggota Komisi I DPA Himatif FMIPA Unpad serta merangkap sebagai Presidium I Himatif FMIPA Unpad selama setahun sampai 2019. Di luar himpunan mahasiswa, penulis juga mengambil andil sebagai anggota Divisi <i>Roadshow</i> untuk acara PARADE 2019 yang diselenggarakan oleh Paguyuban Mahasiswa Banten Unpad (PAMATEN Unpad). Pada pertengahan tahun 2019 sampai tahun 2020, penulis menjabat sebagai ketua Divisi Band untuk KKM Musik Artemipa FMIPA Unpad. Selanjutnya, penulis bertanggung jawab atas lomba musikalisasi puisi untuk ajang OSEAN 2020 FMIPA Unpad. Setelah OSEAN selesai, penulis aktif dalam Keluarga Mahasiswa Buddhist Dharmavira Unpad (KMBD Unpad) sebagai staff Divisi Hubungan Eksternal selama setengah tahun. Terakhir, pada tahun 2021 sampai 2022, penulis menjadi Asisten Praktikum untuk Departemen Ilmu Komputer Unpad.</p>", unsafe_allow_html=True)
